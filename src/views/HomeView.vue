@@ -23,9 +23,11 @@
             <img :src="item.photo" class="goods_image" alt="">
           </td>
           <td>{{ item.foodName }}</td>
-          <td>{{ item.foodId }}</td>
-          <td>{{ item.introduction }}</td>
+
           <td>{{ item.price }}元</td>
+          <td><el-input-number v-model="item.nums" :min="1" :max="10"></el-input-number></td>
+          <td>{{ item.introduction }}</td>
+          <td>{{ item.foodId }}</td>
         </tr>
       </table>
     </div>
@@ -59,13 +61,14 @@
         </template>
         </el-dialog>
         <span class="delete" @click="deleteGoods">删除所选餐品</span>
+        <span class="addCart" @click="addCartGoods">添加购物车</span>
       </div>
     </div>
 
 </template>
 
 <script setup>
-import {getGoodsData,addNewGoodsData,deleteGoodsData} from "@/network/goods";
+import {getGoodsData,addNewGoodsData,deleteGoodsData,AddShoppingCartData} from "@/network/goods";
 import {onMounted, reactive, ref} from "vue";
 let allgoods = ref([]);
 let dialogFormVisible = ref(false)
@@ -116,7 +119,8 @@ const changeChecked=(name)=>{
   //   }
   // }
 }
-const deleteGoods =()=>{
+
+const deleteGoods =()=>{//删除商品
   const deletelist = ref([])
   for(let i in allgoods.value){
     if(allgoods.value[i].checked) {
@@ -133,6 +137,38 @@ const deleteGoods =()=>{
   //     alert(res.data)
   //   })
   // }
+}
+const selectedGood = ref({
+    "id":"1231412432",
+    "name":"123123",
+    "userId":"12314231",
+    "foodId":"123",
+    "amount":"123123",
+    "photo":""
+})
+const addCartGoods=()=>{
+  const SelectedGoodslist = ref([])
+  for(let i in allgoods.value){
+    if(allgoods.value[i].checked) {
+      selectedGood.value.id = "12341111"//假设现在的用户id是123，还没弄好，得登陆页面在本地存储一个用户名
+      selectedGood.value.name = allgoods.value[i].foodName
+      selectedGood.value.foodId = allgoods.value[i].foodId
+      selectedGood.value.amount = "30"  //多个数量的没做好
+      selectedGood.value.photo = allgoods.value[i].photo
+      selectedGood.value.userId = "12341111"
+      SelectedGoodslist.value.push(selectedGood.value)
+    }
+  }
+  console.log(SelectedGoodslist.value[0])
+  AddShoppingCartData(SelectedGoodslist.value[0])
+  // console.log(selectedGood.value)
+  // AddShoppingCartData(selectedGood.value)
+  // for(let i in SelectedGoodslist.value){
+  //   AddShoppingCartData(SelectedGoodslist.value[i]).then(res=>{
+  //     alert(res.msg)
+  //   })
+  // }
+
 }
 </script>
 <style scoped lang="less">
